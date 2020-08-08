@@ -2,12 +2,12 @@ import json
 
 class BasicNode(object):
 
-    def __init(self):
+    def __init__(self):
         #self.time_complexity = sumpy.Rational(1)
         self.time_complexity = '1'
         self.__children = []
         self.parent = None
-        #self.__type = self.__class__.__name__
+        self.__type = self.__class__.__name__
 
     def __iter__(self):
         for child in self.__children:
@@ -52,6 +52,20 @@ class BasicNode(object):
         
         return d
 
+###############################################################
+###############################################################
+
+
+###############################################################
+###############################################################
+
+class CompilationUnitNode(BasicNode):
+
+    def __init__(self):
+        super().__init__()
+
+        pass
+
 
 class FuncDecNode(BasicNode):
     def __init__(self):
@@ -70,6 +84,7 @@ class FuncDecNode(BasicNode):
             node = que.pop(0)
             if isinstance(node, FuncCallNode):
                 if node.name == self.name:
+                    print("Find a recursive pattern!!")
                     self.recursive = True
                     break
                 for child in node:
@@ -84,8 +99,6 @@ class FuncDecNode(BasicNode):
         d.update({'parameter': self.parameter})
 
         return d
-
-
 
 
 class FuncCallNode(BasicNode):
@@ -103,3 +116,28 @@ class FuncCallNode(BasicNode):
         d.update({'parameter': self.parameter})
 
         return d
+
+
+class Operator(BasicNode):
+
+    def __init__(self):
+        super().__init__()
+
+        self.op = ''
+        self.left = BasicNode()
+        self.right = BasicNode()
+        self.expression = ''
+
+        pass
+
+    def to_dict(self):
+        d = super().to_dict()
+        d.update({'left': self.left.to_dict()})
+        d.update({'right': self.right.to_dict()})
+
+        return d
+
+
+
+
+
