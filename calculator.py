@@ -1,5 +1,7 @@
 import ast
 from ast_transformer.python.transform_visitor import PyTransformVisitor
+from bigo_calculator.bigo_calculator import BigOCalculator
+
 
 class PyASTGenerator(object):
     def __init__(self):
@@ -15,8 +17,11 @@ class PyASTGenerator(object):
 
 def main():
     origin_ast = PyASTGenerator().generate('./examples/FiboTest.py')
-    FunctionDef_Visitor = PyTransformVisitor()
-    FunctionDef_Visitor.transform(origin_ast)
+    origin_ast = PyASTGenerator().generate('./examples/fibo.py')
+    bigo_ast = PyTransformVisitor().transform(origin_ast)
+    print("===================================")
+    BigOCalculator(bigo_ast).calc()
+    
     
 
 if __name__ == '__main__' :

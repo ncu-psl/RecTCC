@@ -67,7 +67,7 @@ class CompilationUnitNode(BasicNode):
         pass
 
 
-class FuncDecNode(BasicNode):
+class FuncDeclNode(BasicNode):
     def __init__(self):
         super().__init__()
 
@@ -81,14 +81,14 @@ class FuncDecNode(BasicNode):
         que = [self]
 
         while que:
-            node = que.pop(0)
+            node = que.pop(0) 
             if isinstance(node, FuncCallNode):
                 if node.name == self.name:
-                    print("Find a recursive pattern!!")
+                    print("Find a recursive pattern!! %s%s" %(node.name, node.parameter))
                     self.recursive = True
-                    break
-                for child in node:
-                    que.append(child)
+                    #break
+            for child in node:
+                que.append(child)
 
         return self.recursive
 
@@ -138,6 +138,32 @@ class Operator(BasicNode):
         return d
 
 
+class IfNode(BasicNode):
+    
+    def __init__(self):
+        super().__init__()
+
+        self.condition = BasicNode()
+        self.true_stmt = []
+        self.false_stmt = []
+
+        pass
+
+    def __iter__(self):
+        for child in self.condition:
+            yield child
+        for child in self.true_stmt:
+            yield child
+        for child in self.false_stmt:
+            yield child
+
+    def to_dict(self):
+        d = super().to_dict()
+        d.update({'condition': self.condition.to_dict()})
+        d.update({'true': self.true_stmt})
+        d.update({'false': self.false_stmt})
+
+        return d
 
 
 
