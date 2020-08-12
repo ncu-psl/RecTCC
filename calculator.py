@@ -1,6 +1,7 @@
 import ast
 from ast_transformer.python.transform_visitor import PyTransformVisitor
 from bigo_calculator.bigo_calculator import BigOCalculator
+from bigo_calculator.recursion_calculator import RecursionChecker
 
 
 class PyASTGenerator(object):
@@ -17,10 +18,12 @@ class PyASTGenerator(object):
 
 def main():
     origin_ast = PyASTGenerator().generate('./examples/FiboTest.py')
-    origin_ast = PyASTGenerator().generate('./examples/fibo.py')
     bigo_ast = PyTransformVisitor().transform(origin_ast)
-    print("===================================")
-    BigOCalculator(bigo_ast).calc()
+    RCV = RecursionChecker(bigo_ast)
+    RCV.check()
+    RCV.find_MaxRecursionTimes_in_one_scope()
+    print(RCV.recursion_time)
+
     
     
 

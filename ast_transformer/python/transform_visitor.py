@@ -17,17 +17,16 @@ class PyTransformVisitor(ast.NodeVisitor):
         self.cu = CompilationUnitNode()
         for child in ast_module.body:
             self.parent = self.cu
-            if isinstance(child, ast.FunctionDef):
-                print("Find a FunctionDef: ", child.name)
-                #self.cu.add_children(self.visit(child))
-            else:
-                print("Not a FunctionDef. Do nothing.")
-
+            #if isinstance(child, ast.FunctionDef):
+            #    print("Find a FunctionDef: ", child.name)
+            #    self.cu.add_children(self.visit(child))
+            #else:
+            #    print("Not a FunctionDef. Do nothing.")
             self.cu.add_children(self.visit(child))
         self.cu.add_parent_to_children()
 
     def visit_FunctionDef(self, ast_func_def: ast.FunctionDef):
-        print("Enter a FunctionDef: %s" %(ast_func_def.name))
+        #print("Enter a FunctionDef: %s" %(ast_func_def.name))
         func_decl_node = FuncDeclNode()
         func_decl_node.name = ast_func_def.name
 
@@ -48,7 +47,7 @@ class PyTransformVisitor(ast.NodeVisitor):
             func_decl_node.parameter.append(ast_func_def.args.kwarg.arg)
             #print("kwarg: ", ast_func_def.args.kwarg.arg)
 
-        print("FunctionDef args: %s" %(func_decl_node.parameter))
+        #print("FunctionDef args: %s" %(func_decl_node.parameter))
 
         for child in ast_func_def.body:
             self.parent = func_decl_node
