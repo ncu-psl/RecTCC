@@ -27,12 +27,14 @@ class RecursionChecker(BigOAstVisitor):
         fibo最大次數是2次，fibo_dp最大僅為1次
         '''
         for function in self.scope_list_final:
-            function_name = function.pop(0)
-            max_number = self.find_max_number(function_name, function)
-            #print(function_name, max_number)
-            if max_number > 0:
-                self.recursion_time.update({function_name: max_number})
-            
+            function_tuple = function.pop(0)
+            function_name = function_tuple[0]
+            function_arg = function_tuple[1]
+            #max_number = self.find_max_number(function_name, function)
+            biggest_single_scope = self.find_single_scope(function_name, function)
+            #self.recursion_time.update({function_name: max_number}) 
+            self.biggest_single_scope.update({function_tuple: biggest_single_scope})
+
     def find_max_number(self, name: str, scope: list):
         '''
         支援find_MaxRecursionTimes_in_one_scope
@@ -47,11 +49,25 @@ class RecursionChecker(BigOAstVisitor):
                 list_number = self.find_max_number(name, child)
                 if list_number > max_number:
                     max_number = list_number
-            elif child == name:
+            elif child[0] == name:
                 max_number += 1
 
         return max_number
 
+    def find_single_scope(self, name: str, scope: list):
+        biggest_single_scope = []
+        if len(scope) == 0:
+            return []
+
+        for child in scope:
+            if isinstance(child, list):
+                single_scope = self.find_single_scope(name, child)
+                if len(single_scope) > len(biggest_single_scope):
+                    biggest_single_scope = single_scope
+            elif child[0] == name:
+                biggest_single_scope.append(child[1])
+
+        return biggest_single_scope
 
     def check(self):
         super().visit(self.root)
@@ -63,15 +79,17 @@ class RecursionChecker(BigOAstVisitor):
     #        self.visit(child)
 
     def visit_FuncDeclNode(self, func_decl_node: bigo_ast.FuncDeclNode):
-        self.scope_list.append([func_decl_node.name])
+        self.scope_list.append([(func_decl_node.name, tuple(func_decl_node.parameter))])
         for child in func_decl_node.children:
             self.visit(child)
         self.scope_list_final.append(self.scope_list.pop())
 
     def visit_FuncCallNode(self, func_call: bigo_ast.FuncCallNode):
+        #print("Call function: %s%s" %(func_call.name, func_call.parameter))
         if self.scope_list:
             current_scope_list = self.scope_list.pop()
-            current_scope_list.append(func_call.name)
+            #current_scope_list.append(func_call.name + func_call.parameter)
+            current_scope_list.append((func_call.name, func_call.parameter))
             self.scope_list.append(current_scope_list)
 
 

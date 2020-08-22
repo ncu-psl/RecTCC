@@ -1,7 +1,10 @@
 import ast
 from ast_transformer.python.transform_visitor import PyTransformVisitor
 from bigo_calculator.bigo_calculator import BigOCalculator
-from bigo_calculator.recursion_calculator import RecursionChecker
+from bigo_calculator.recursion_calculator_copy import RecursionChecker
+from masterT import master_theorem
+
+from bigo_calculator.scope_separater import ScopeSeparater
 
 
 class PyASTGenerator(object):
@@ -21,8 +24,17 @@ def main():
     bigo_ast = PyTransformVisitor().transform(origin_ast)
     RCV = RecursionChecker(bigo_ast)
     RCV.check()
-    RCV.find_MaxRecursionTimes_in_one_scope()
-    print(RCV.recursion_time)
+    for l in RCV.scope_list_final:
+        print(l)
+    #RCV.find_MaxRecursionTimes_in_one_scope()
+    #print(RCV.scope_list_final)
+    #print(RCV.recursion_time)
+    #recursion_list = RCV.biggest_single_scope
+    #print(recursion_list)
+    #master_theorem(recursion_list)
+
+    #SSV = ScopeSeparater(bigo_ast)
+    #SSV.check()
 
     
     
