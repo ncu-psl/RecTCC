@@ -7,12 +7,10 @@ def fibo(n):
         return fibo(n-1) + fibo(n-2)
 
 def fibo_dp(n):
-    #fibo_array = [0, 1]
+    fibo_array = [0, 1]
 
-    #while len(fibo_array) < n + 1:
-    #    fibo_array.append(0)
-    fibo_array = [0] * n
-    fibo_array[1] = 1
+    while len(fibo_array) < n + 1:
+        fibo_array.append(0)
 
     if n <= 1:
         return n
@@ -26,6 +24,9 @@ def fibo_dp(n):
 
     return fibo_array[n]
 
+def test(a, b):
+    return test(a-1, b-1)
+    
 print("test")
 print(fibo_dp(9))
 

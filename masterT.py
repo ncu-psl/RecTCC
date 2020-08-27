@@ -1,38 +1,40 @@
 import sympy
 from collections import Counter
 
-#d = {('fibo', ('n',)): [['(n - 1)'], ['(n - 2)']], ('fibo_dp', ('n',)): [['(n - 1)']]}
+def recursion_time_complexity_calculator(funcParameter, funcCall):
+    if len(funcParameter) == 1:
+        argment = sympy.Symbol(funcParameter[0])
+        time_complexity_list = []
+        while funcCall:
+            call_list_in_one_road = funcCall.pop(0)
+            if call_list_in_one_road:
+                time_complexity_list.append(master_theorem_one_arg(argment, call_list_in_one_road, sympy.Symbol('M')))
+        print("time_complexity_list: ", time_complexity_list)
+        return max_bigO(argment, time_complexity_list)
 
-def master_theorem(d):
-    n = sympy.Symbol('n', positive = True)
-    change_rate = []
-    time_complexity = {}
+    elif len(funcParameter) > 1:
+        return("Can't handle multi-arguments.")
 
-    for function, call in d.items():
-        function_name = function[0]
-        time_complexity.update({function_name: sympy(0)})
-        function_arg = sympy.Symbol(function[1][0])
+    else:
+        return("No argument.")
 
-        for arg in call:
-            call_arg = sympy.sympify(arg[0])
-            change_rate.append(sympy.limit(call_arg / function_arg, function, sympy.oo))
+def master_theorem_one_arg(arg, call_list, bigo_not_recursion):
+    argment = arg
+    time_complexity = sympy.Rational(1)
+    
+    for call_arg in call_list:
+        #if T(n) -> T(n/m) => time_complexity += log(n, m)
+        if sympy.limit(argment - sympy.sympify(call_arg), argment, sympy.oo) == sympy.oo:
+            time_complexity += log(argment, m)
+        #if T(n) -> T(n-1) => time_complexity += n
+        else:
+            time_complexity += argment
 
+    return bigo_not_recursion * time_complexity
 
-
-
-
-#   for k, v in d.items():
-#       c = []
-#       original_arg = sympy.Symbol(k[1][0])
-#       for value in v:
-#           funcCall_arg = sympy.sympify(value[0])
-#           c.append(sympy.limit(funcCall_arg / original_arg, original_arg, sympy.oo))
-#       for b, a in Counter(c).items():
-#           print("a, b = ", a, b)
-#           if b > 1:
-#               print("Time complexity is: ", sympy.Symbol('n') ** (sympy.log(a, b)) * sympy.log(sympy.Symbol('n')))
-#           elif b == 1:
-#               if a == 1:
-#                   print("Time complexity is: ", sympy.log(sympy.Symbol('n')))
-#               else:
-#                   print("Time complexity is: ", a ** sympy.Symbol('n'))
+def max_bigO(arg, bigO_list):
+    time = sympy.Rational(1)
+    if bigO_list:
+        for bigO in bigO_list:
+            time += bigO
+    return sympy.O(time, (arg, sympy.oo))
