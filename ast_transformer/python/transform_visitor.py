@@ -114,17 +114,17 @@ class PyTransformVisitor(ast.NodeVisitor):
 
     def visit_AugAssign(self, ast_aug_assign: ast.AugAssign):
         # need to do some trick of +=, -=, *=, /=
-        if type(ast_aug_assign.op) == Add:
-            new_op = BinOp(ast_aug_assign.target, Add(), ast_aug_assign.value)
-        elif type(ast_aug_assign.op) == Sub:
-            new_op = BinOp(ast_aug_assign.target, Sub(), ast_aug_assign.value)
-        elif type(ast_aug_assign.op) == Mult:
-            new_op = BinOp(ast_aug_assign.target, Mult(), ast_aug_assign.value)
-        elif type(ast_aug_assign.op) == Div:
-            new_op = BinOp(ast_aug_assign.target, Div(), ast_aug_assign.value)
+        if type(ast_aug_assign.op) == ast.Add:
+            new_op = ast.BinOp(ast_aug_assign.target, ast.Add(), ast_aug_assign.value)
+        elif type(ast_aug_assign.op) == ast.Sub:
+            new_op = ast.BinOp(ast_aug_assign.target, ast.Sub(), ast_aug_assign.value)
+        elif type(ast_aug_assign.op) == ast.Mult:
+            new_op = ast.BinOp(ast_aug_assign.target, ast.Mult(), ast_aug_assign.value)
+        elif type(ast_aug_assign.op) == ast.Div:
+            new_op = ast.BinOp(ast_aug_assign.target, ast.Div(), ast_aug_assign.value)
         else:
             raise Exception("does not support operator: ", ast_aug_assign.op)
-        ast_assign = Assign(ast_aug_assign.target, new_op)
+        ast_assign = ast.Assign(ast_aug_assign.target, new_op)
 
         # create Big-O AST assign node
         assign_node = AssignNode()
@@ -133,9 +133,9 @@ class PyTransformVisitor(ast.NodeVisitor):
 
         return assign_node
     def visit_BoolOp(self, ast_bool_op: ast.BoolOp):
-        if type(ast_bool_op.op) == And:
+        if type(ast_bool_op.op) == ast.And:
             op = '&&'
-        elif type(ast_bool_op.op) == Or:
+        elif type(ast_bool_op.op) == ast.Or:
             op = '||'
         else:
             raise Exception("does not support operator: ", ast_bool_op.op)
@@ -269,7 +269,7 @@ class PyTransformVisitor(ast.NodeVisitor):
         return if_node
 
     def for_iter(self, ast_iter):
-        if type(ast_iter) == Call:
+        if type(ast_iter) == ast.Call:
             variable_node = VariableNode()
             variable_node.name = print_ast_visitor().print_node(ast_iter)
             return variable_node
@@ -280,7 +280,7 @@ class PyTransformVisitor(ast.NodeVisitor):
             return variable_node
 
         else:
-            if type(ast_iter) == Name:
+            if type(ast_iter) == ast.Name:
                 terminal = self.visit(ast_iter)
                 return terminal
         raise Exception("can't support this iter type : ", type(ast_iter)) 
