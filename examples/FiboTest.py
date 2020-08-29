@@ -21,6 +21,7 @@ def fibo_dp(n):
             fibo_array[n-2] = fibo_dp(n-2)
 
     fibo_array[n] = fibo_array[n-1] + fibo_array[n-2]
+    fibo_dp(n-3)
 
     return fibo_array[n]
 

@@ -1,10 +1,11 @@
 import json
+import sympy
 
 class BasicNode(object):
 
     def __init__(self):
-        #self.time_complexity = sumpy.Rational(1)
-        self.time_complexity = '1'
+        self.time_complexity = [sympy.Rational(0)]
+        #self.time_complexity = '1'
         self.__children = []
         self.parent = None
         self.__type = self.__class__.__name__
@@ -67,6 +68,14 @@ class CompilationUnitNode(BasicNode):
         pass
 
 
+class ClassNode(BasicNode):
+    def __init__(self):
+        super().__init__()
+        self.name = ''
+        self.inher = []
+        self.vir_inher = []
+    pass
+
 class FuncDeclNode(BasicNode):
     def __init__(self):
         super().__init__()
@@ -84,7 +93,6 @@ class FuncDeclNode(BasicNode):
             node = que.pop(0) 
             if isinstance(node, FuncCallNode):
                 if node.name == self.name:
-                    print("Find a recursive pattern!! %s%s" %(node.name, node.parameter))
                     self.recursive = True
                     #break
             for child in node:
@@ -114,6 +122,91 @@ class FuncCallNode(BasicNode):
         d = super().to_dict()
         d.update({'name': self.name})
         d.update({'parameter': self.parameter})
+
+        return d
+
+class VariableNode(BasicNode):
+
+    def __init__(self):
+        super().__init__()
+
+        self.name = ''
+        self.value = ''
+
+        pass
+
+    def to_dict(self):
+        d = super().to_dict()
+        d.update({'value': self.name})
+
+        return d
+        
+class ArrayNode(BasicNode):
+    
+    def __init__(self):
+        super().__init__()
+
+class ArrayNode(BasicNode):
+
+    def __init__(self):
+        super().__init__()
+
+        self.array = []
+
+        pass
+    def to_dict(self):
+        d = super().to_dict()
+        d.update({'array': self.array})
+
+        return d
+
+class ConstantNode(BasicNode):
+
+    def __init__(self):
+        super().__init__()
+
+        self.value = 0
+
+        pass
+
+    def to_dict(self):
+        d = super().to_dict()
+        d.update({'value': self.value})
+
+        return d
+    
+    
+class AssignNode(BasicNode):
+
+    def __init__(self):
+        super().__init__()
+        self.__target = BasicNode()
+        self.__value = BasicNode()
+
+        pass
+
+    @property
+    def target(self):
+        return self.__target
+
+    @target.setter
+    def target(self, target):
+        self.__target = target
+        self.add_children(self.target)
+
+    @property
+    def value(self):
+        return self.__value
+
+    @value.setter
+    def value(self, value):
+        self.__value = value
+        self.add_children(self.value)
+
+    def to_dict(self):
+        d = super().to_dict()
+        d.update({'target': self.target.to_dict()})
+        d.update({'value': self.value.to_dict()})
 
         return d
 
@@ -165,5 +258,80 @@ class IfNode(BasicNode):
 
         return d
 
+class ForNode(BasicNode):
+    def __init__(self):
+        super().__init__()
 
+        self.variable = None
+        self.init = []
+        self.term = []
+        self.update = []
+
+        pass
+
+    def to_dict(self):
+        d = super().to_dict()
+        d.update({'variable': self.variable})
+
+        init_list = []
+        for child in self.init:
+            init_list.append(child.to_dict())
+
+        d.update({'init': init_list})
+
+        term_list = []
+        for child in self.init:
+            term_list.append(child.to_dict())
+        d.update({'terminal': term_list})
+
+        update_list = []
+        for child in self.init:
+            update_list.append(child.to_dict())
+        d.update({'update': update_list})
+
+        return d
+
+class ForeachNode(BasicNode):
+    def __init__(self):
+        super().__init__()
+
+        self.variable = BasicNode()
+        self.target = []
+        self.iter = []
+        pass
+
+    def to_dict(self):
+        d = super().to_dict()
+        
+        target_list = []
+        for child in self.target:
+            target_list.append(child.to_dict())
+
+        d.update({'target': target_list})
+
+        iter_list = []
+        for child in self.iter:
+            iter_list.append(child.to_dict())
+        d.update({'iter': iter_list})
+
+        d.update({'variable': self.variable})
+        return d
+
+class WhileNode(BasicNode):
+    def __init__(self):
+        super().__init__()
+
+        self.cond = []
+
+        pass
+
+    def to_dict(self):
+        d = super().to_dict()
+        
+        cond_list = []
+        for clild in self.cond:
+            cond_list.append(child.to_dict())
+        d.update({'cond': cond_list})
+
+        return d
 

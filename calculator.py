@@ -4,7 +4,7 @@ from ast_transformer.python.transform_visitor import PyTransformVisitor
 from bigo_calculator.scope_separater import ScopeSeparater
 from masterT import recursion_time_complexity_calculator
 
-
+from bigo_calculator.time_complexity_scope_separater import TimeSeparater
 
 
 def main():
@@ -16,7 +16,9 @@ def main():
         print("funcName: %s%s, funcCall: %s" %(funcName, funcParameter, funcCall))
         print(recursion_time_complexity_calculator(funcParameter, funcCall))
         
-    
+
+    TCV = TimeSeparater(bigo_ast)
+    TCV.check()
 
 if __name__ == '__main__' :
     main()

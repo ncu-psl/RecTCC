@@ -1,6 +1,7 @@
 import ast
 import astunparse
-from bigo_ast.bigo_ast import CompilationUnitNode, FuncDeclNode, FuncCallNode, Operator, BasicNode, IfNode
+from ast_transformer.python.print_ast_visitor import print_ast_visitor
+from bigo_ast.bigo_ast import CompilationUnitNode, FuncDeclNode, FuncCallNode, Operator, BasicNode, IfNode, ClassNode, VariableNode, ConstantNode, ArrayNode, AssignNode, ForeachNode, WhileNode
 
 
 class PyTransformVisitor(ast.NodeVisitor):
@@ -17,16 +18,21 @@ class PyTransformVisitor(ast.NodeVisitor):
         self.cu = CompilationUnitNode()
         for child in ast_module.body:
             self.parent = self.cu
-            #if isinstance(child, ast.FunctionDef):
-            #    print("Find a FunctionDef: ", child.name)
-            #    self.cu.add_children(self.visit(child))
-            #else:
-            #    print("Not a FunctionDef. Do nothing.")
             self.cu.add_children(self.visit(child))
-        self.cu.add_parent_to_children()
+        #self.cu.add_parent_to_children()
+        pass
 
+    def visit_ClassDef(self, ast_class_def : ast.ClassDef):
+        class_def_node = ClassNode()
+        class_def_node.name = ast_class_def.name
+        for parent in ast_class_def.bases:
+            class_def_node.inher.append(parent)
+        
+        for child in ast_class_def.body:
+            self.parent = class_def_node
+            class_def_node.add_children(self.visit(child))
+        
     def visit_FunctionDef(self, ast_func_def: ast.FunctionDef):
-        #print("Enter a FunctionDef: %s" %(ast_func_def.name))
         func_decl_node = FuncDeclNode()
         func_decl_node.name = ast_func_def.name
 
@@ -47,8 +53,6 @@ class PyTransformVisitor(ast.NodeVisitor):
             func_decl_node.parameter.append(ast_func_def.args.kwarg.arg)
             #print("kwarg: ", ast_func_def.args.kwarg.arg)
 
-        #print("FunctionDef args: %s" %(func_decl_node.parameter))
-
         for child in ast_func_def.body:
             self.parent = func_decl_node
             func_decl_node.add_children(self.visit(child))
@@ -59,14 +63,104 @@ class PyTransformVisitor(ast.NodeVisitor):
         func_call_node = FuncCallNode()
         if hasattr(ast_call.func, 'id'):
             func_call_node.name = ast_call.func.id
-            #print('Call function(args): %s' %(ast_call.func.id))
-            #print('Call args: %s' %(ast_call.args))
         else:
             func_call_node.name = ast_call.func.attr
-            #print('Call function: %s' %(ast_call.func.attr))
 
         func_call_node.parameter = astunparse.unparse(ast_call.args)
         return func_call_node
+
+    def visit_Name(self, ast_name: ast.Name):
+        variable_node = VariableNode()
+        variable_node.name = ast_name.id
+
+        return variable_node
+
+    def visit_List(self, ast_list: ast.List):
+        array_node = ArrayNode()
+        for elt in ast_list.elts:
+            array_node.array.append(self.visit(elt))
+        return array_node
+
+    def visit_Tuple(self, ast_tuple: ast.Tuple):
+        array_node = ArrayNode()
+        for elt in ast_tuple.elts:
+            array_node.array.append(self.visit(elt))
+        return array_node
+
+    def visit_Num(self, ast_num: ast.Num):
+        constant_node = ConstantNode()
+        if type(ast_num.n) == int:
+            constant_node.value = ast_num.n
+        # else:
+        #     raise NotImplementedError('Constant type not support: ', type(ast_num.n))
+
+        return constant_node
+
+    def visit_Assign(self, ast_assign: ast.Assign):
+        # create Big-O AST assign node
+        assign_node = AssignNode()
+        assign_node.target = self.visit(ast_assign.targets[0])
+        assign_node.value = self.visit(ast_assign.value)
+
+        return assign_node
+
+    def visit_AnnAssign(self, ast_ann_assign: ast.AnnAssign):
+        # create Big-O AST assign node
+        assign_node = AssignNode()
+        assign_node.target = self.visit(ast_ann_assign.targets[0])
+        assign_node.value = self.visit(ast_ann_assign.value)
+
+        return assign_node
+
+    def visit_AugAssign(self, ast_aug_assign: ast.AugAssign):
+        # need to do some trick of +=, -=, *=, /=
+        if type(ast_aug_assign.op) == Add:
+            new_op = BinOp(ast_aug_assign.target, Add(), ast_aug_assign.value)
+        elif type(ast_aug_assign.op) == Sub:
+            new_op = BinOp(ast_aug_assign.target, Sub(), ast_aug_assign.value)
+        elif type(ast_aug_assign.op) == Mult:
+            new_op = BinOp(ast_aug_assign.target, Mult(), ast_aug_assign.value)
+        elif type(ast_aug_assign.op) == Div:
+            new_op = BinOp(ast_aug_assign.target, Div(), ast_aug_assign.value)
+        else:
+            raise Exception("does not support operator: ", ast_aug_assign.op)
+        ast_assign = Assign(ast_aug_assign.target, new_op)
+
+        # create Big-O AST assign node
+        assign_node = AssignNode()
+        assign_node.target = self.visit(ast_assign.targets)
+        assign_node.value = self.visit(ast_assign.value)
+
+        return assign_node
+    def visit_BoolOp(self, ast_bool_op: ast.BoolOp):
+        if type(ast_bool_op.op) == And:
+            op = '&&'
+        elif type(ast_bool_op.op) == Or:
+            op = '||'
+        else:
+            raise Exception("does not support operator: ", ast_bool_op.op)
+
+        operator_node = Operator()
+        operator_node.op = op
+        for i, node in enumerate(ast_bool_op.values):
+            if i == (len(ast_bool_op.values)-1) and i > 1:
+                right = self.visit(node)
+                deep_operator_node.right = right
+
+            elif i == 0:
+                left = self.visit(node)
+                operator_node.left = left
+
+            else: #right
+                left = self.visit(node)
+                deep_operator_node = Operator()
+                deep_operator_node.op = op
+                deep_operator_node.left = left
+                operator_node.right = deep_operator_node
+
+        operator_node.add_children(operator_node.left)
+        operator_node.add_children(operator_node.right)
+        return operator_node
 
     def visit_BinOp(self, ast_bin_op: ast.BinOp):
         operator_node = Operator()
@@ -108,6 +202,41 @@ class PyTransformVisitor(ast.NodeVisitor):
 
         return operator_node
 
+    def visit_Compare(self, ast_compare: ast.Compare):
+        operator_node = Operator()
+        left = self.visit(ast_compare.left)
+        right = self.visit(ast_compare.comparators[0])
+        op = self.transform_op(ast_compare.ops[0])
+        operator_node.left = left
+        operator_node.right = right
+        operator_node.op = op
+        return operator_node
+
+    def transform_op(self, compare_op):
+        if isinstance(compare_op, ast.Eq):
+            return '=='
+        if isinstance(compare_op, ast.NotEq):
+            return '!='
+        if isinstance(compare_op, ast.Lt):
+            return '<'
+        if isinstance(compare_op, ast.LtE):
+            return '<='
+        if isinstance(compare_op, ast.Gt):
+            return '>'
+        if isinstance(compare_op, ast.GtE):
+            return '>='
+        if isinstance(compare_op, ast.Is):
+            return '=='
+        if isinstance(compare_op, ast.IsNot):
+            return '!='
+        if isinstance(compare_op, ast.In):
+            return '=='
+        if isinstance(compare_op, ast.NotIn):
+            return '!='
+        else:
+            raise Exception("can't support this compare op : ", type(compare_op)) 
+
+
     def visit_If(self, ast_if: ast.If):
         if_node = IfNode()
         if_node.condition = self.visit(ast_if.test)
@@ -139,6 +268,55 @@ class PyTransformVisitor(ast.NodeVisitor):
 
         return if_node
 
+    def for_iter(self, ast_iter):
+        if type(ast_iter) == Call:
+            variable_node = VariableNode()
+            variable_node.name = print_ast_visitor().print_node(ast_iter)
+            return variable_node
+            
+        elif type(ast_iter) == ast.Attribute:
+            variable_node = VariableNode()
+            variable_node.name = print_ast_visitor().print_node(ast_iter)
+            return variable_node
+
+        else:
+            if type(ast_iter) == Name:
+                terminal = self.visit(ast_iter)
+                return terminal
+        raise Exception("can't support this iter type : ", type(ast_iter)) 
+
+    def visit_For(self, ast_for):
+        foreach_node = ForeachNode()
+
+        foreach_node.variable = self.for_iter(ast_for.iter)
+
+        target = self.visit(ast_for.target)
+        if type(target) is list:
+            foreach_node.target.extend(target)
+        else:
+            foreach_node.target.append(target)
+
+        iter = self.visit(ast_for.iter)
+        if type(iter) is list:
+            foreach_node.iter.extend(iter)
+        else:
+            foreach_node.iter.append(iter)
+
+        for child in ast_for.body:
+            child_node = self.visit(child)
+            foreach_node.add_children(child_node)
+
+        return foreach_node
+
+    def visit_While(self, ast_while):
+        while_node = WhileNode()        
+        while_node.cond = self.visit(ast_while.test)
+               
+        for child in ast_while.body:
+            child_node = self.visit(child)
+            while_node.add_children(child_node)
+            
+        return while_node
 
     def generic_visit(self, node):
         children = []
