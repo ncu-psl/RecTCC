@@ -31,6 +31,14 @@ class TimeSeparater(BigOAstVisitor):
                 result.append(new_time + old_time)
     
         return result
+
+    def mul_time(self, old, new):
+        result = []
+        for new_time in new:
+            for old_time in old:
+                result.append(new_time * old_time)
+    
+        return result
     
     def visit_FuncDeclNode(self, func_decl_node: bigo_ast.FuncDeclNode):
         #if func_decl_node.determine_recursion():
@@ -43,16 +51,12 @@ class TimeSeparater(BigOAstVisitor):
         #    if tc == 0:
         #        tc = 1
         #    func_decl_node.time_complexity = tc
-        tc = 0
+        tc = [sympy.Rational(1)]
         for child in func_decl_node.children:
             self.visit(child)
-            tc += child.time_complexity
-        if tc == 0:
-            tc = 1
+            tc = self.add_time(tc, child.time_complexity)
         func_decl_node.time_complexity = tc
-        self.tc_list.append([sympy.Rational(1)])
-        self.tc_list_final.append(self.add_time(self.tc_list.pop(), [tc]))
-        print("tc_list_final: ", self.tc_list_final)
+        print("time_complexity: ", func_decl_node.time_complexity)
 
         pass
 
@@ -60,30 +64,30 @@ class TimeSeparater(BigOAstVisitor):
         target = func_call.name
         for func in self.function_list:
             if target == func.name:
-                func_call.time_complexity = sympy.Symbol(func.name, integer=True, positive=True)
+                func_call.time_complexity = [sympy.Symbol(func.name, integer=True, positive=True)]
                 break
 
         pass
 
     def visit_VariableNode(self, variable_node: bigo_ast.VariableNode):
-        return sympy.Symbol(variable_node.name, integer=True, positive=True)
+        return [sympy.Symbol(variable_node.name, integer=True, positive=True)]
 
     def visit_ConstantNode(self, const_node: bigo_ast.ConstantNode):
-        return sympy.Rational(const_node.value)
+        return [sympy.Rational(const_node.value)]
 
     def visit_AssignNode(self, assign_node: bigo_ast.AssignNode):
         target = assign_node.target
         value = assign_node.value
         self.visit(target)
 
-        value_tc = 0
+        value_tc = [sympy.Rational(1)]
         if type(value) is not list:
             self.visit(value)
             value_tc = value.time_complexity
         else:
             for child in value:
                 self.visit(child)
-                value_tc += child.time_complexity
+                value_tc = self.add_time(value_tc, child.time_complexity)
 
         assign_node.time_complexity = value_tc
 
@@ -94,20 +98,20 @@ class TimeSeparater(BigOAstVisitor):
         left = self.visit(node.left)
         right = self.visit(node.right)
 
-        node.time_complexity = node.left.time_complexity + node.right.time_complexity
+        node.time_complexity = self.add_time(node.left.time_complexity, node.right.time_complexity)
 
-        if op == '+':
-            return operator.add(left, right)
-        elif op == '-':
-            return operator.sub(left, right)
-        elif op == '*':
-            return operator.mul(left, right)
-        elif op == '/':
-            return operator.truediv(left, right)
-        elif op == '<<':
-            return left * 2 ** right
-        elif op == '>>':
-            return left / (2 ** right)
+    #    if op == '+':
+    #        return operator.add(left, right)
+    #    elif op == '-':
+    #        return operator.sub(left, right)
+    #    elif op == '*':
+    #        return operator.mul(left, right)
+    #    elif op == '/':
+    #        return operator.truediv(left, right)
+    #    elif op == '<<':
+    #        return left * 2 ** right
+    #    elif op == '>>':
+    #        return left / (2 ** right)
         
     #def visit_IfNode(self, if_node: bigo_ast.IfNode):
     #    if self.scope_list:
@@ -140,23 +144,23 @@ class TimeSeparater(BigOAstVisitor):
         self.visit(if_node.condition)
         cond_tc = if_node.condition.time_complexity
 
-        true_tc = 0
+        true_tc = [sympy.Rational(1)]
         for child in if_node.true_stmt:
             self.visit(child)
-            true_tc += child.time_complexity
+            true_tc = self.add_time(true_tc, child.time_complexity)
 
-        if true_tc == 0:
-            true_tc = 1
-
-        false_tc = 0
+        false_tc = [sympy.Rational(1)]
         for child in if_node.false_stmt:
             self.visit(child)
-            false_tc += child.time_complexity
+            false_tc = self.add_time(false_tc, child.time_complexity)
 
-        if false_tc == 0:
-            false_tc = 1
+        true_false_tc = []
+        for t_tc in true_tc:
+            true_false_tc.append(t_tc)
+        for f_tc in false_tc:
+            true_false_tc.append(f_tc)
 
-        if_node.time_complexity = cond_tc + sympy.Max(true_tc, false_tc)
+        if_node.time_complexity = self.add_time(cond_tc, true_false_tc)
 
         pass
 
@@ -165,19 +169,17 @@ class TimeSeparater(BigOAstVisitor):
         #target = self.visit(foreach_node.target)
         #iter = self.visit(foreach_node.iter)
 
-        tc = 0
+        tc = [sympy.Rational(1)]
         for child in foreach_node.children:
             self.visit(child)
-            tc += child.time_complexity
-        if tc == 0:
-            tc = 1
+            tc = self.add_time(tc, child.time_complexity)
 
         step = self.visit(foreach_node.variable)
-        tc *= step
+        tc = self.mul_time(tc, step)
         for child in foreach_node.target:
-            tc += child.time_complexity
+            tc = self.add_time(tc, child.time_complexity)
         for child in foreach_node.iter:
-            tc += child.time_complexity
+            tc = self.add_time(tc, child.time_complexity)
 
         foreach_node.time_complexity = tc
         pass

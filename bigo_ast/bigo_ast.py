@@ -4,8 +4,7 @@ import sympy
 class BasicNode(object):
 
     def __init__(self):
-        self.time_complexity = sympy.Rational(1)
-        self.all_road_tc = [sympy.Rational(1)]
+        self.time_complexity = [sympy.Rational(1)]
         #self.time_complexity = '1'
         self.__children = []
         self.parent = None
