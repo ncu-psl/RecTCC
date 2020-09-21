@@ -40,7 +40,7 @@ class ScopeSeparater(BigOAstVisitor):
     def visit_FuncCallNode(self, func_call: bigo_ast.FuncCallNode):
         if self.scope_list and func_call.name == self.func_decl_name_list[-1]:
             current_scope_list = self.scope_list.pop()
-            print(func_call.name, current_scope_list)
+            #print(func_call.name, current_scope_list)
             #current_scope_list = self.add_road(current_scope_list, [[func_call.name + func_call.parameter.replace("\n", "")]])
             current_scope_list = self.add_road(current_scope_list, [[func_call.parameter.replace("\n", "")]])
             self.scope_list.append(current_scope_list)
