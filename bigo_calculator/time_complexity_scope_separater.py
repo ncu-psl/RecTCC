@@ -56,7 +56,7 @@ class TimeSeparater(BigOAstVisitor):
             self.visit(child)
             tc = self.add_time(tc, child.time_complexity)
         func_decl_node.time_complexity = tc
-        print("time_complexity: ", func_decl_node.time_complexity)
+        #print("time_complexity: ", func_decl_node.time_complexity)
 
         pass
 

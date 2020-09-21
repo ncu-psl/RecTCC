@@ -36,3 +36,24 @@ def fibo_dp(n):
 def test(a, b):
     return test(a-1, b-1)
     
+def order(n):
+    if n%3 == 0 :
+        print(0)
+        if 1 == 1 and order(n) ==1:
+            print(1)
+            print(1)
+            print(1)
+            print(1)
+            print(1)
+        else:
+            print(0)
+            print(1)
+            print(1)
+    elif n%3 == 1 + fobi(1) == 0:
+        print(1)
+        print(1)
+        print(1)
+    else:
+        print(2)
+        print(2)
+        print(2)
