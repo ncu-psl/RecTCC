@@ -335,3 +335,11 @@ class WhileNode(BasicNode):
 
         return d
 
+class SubscriptNode(BasicNode):
+    def __init__(self):
+        super().__init__()
+
+        self.value = ''
+        self.slice = None
+
+        pass

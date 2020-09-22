@@ -42,7 +42,7 @@ class ScopeSeparater(BigOAstVisitor):
             current_scope_list = self.scope_list.pop()
             #print(func_call.name, current_scope_list)
             #current_scope_list = self.add_road(current_scope_list, [[func_call.name + func_call.parameter.replace("\n", "")]])
-            current_scope_list = self.add_road(current_scope_list, [[func_call.parameter.replace("\n", "")]])
+            current_scope_list = self.add_road(current_scope_list, [[func_call.parameter]])
             self.scope_list.append(current_scope_list)
 
     #def visit_Operator(self, node: bigo_ast.Operator):

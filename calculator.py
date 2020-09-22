@@ -8,8 +8,8 @@ from bigo_calculator.time_complexity_scope_separater import TimeSeparater
 
 
 def main():
-    origin_ast = PyASTGenerator().generate('./examples/binarySearch_recursion.py')
-    #origin_ast = PyASTGenerator().generate('./examples/ForTest.py')
+    #origin_ast = PyASTGenerator().generate('./examples/binarySearch_recursion.py')
+    origin_ast = PyASTGenerator().generate('./examples/FiboTest.py')
     bigo_ast = PyTransformVisitor().transform(origin_ast)
     RCV = ScopeSeparater(bigo_ast)
     RCV.check()

@@ -1,7 +1,7 @@
 import ast
 import astunparse
 from ast_transformer.python.print_ast_visitor import print_ast_visitor
-from bigo_ast.bigo_ast import CompilationUnitNode, FuncDeclNode, FuncCallNode, Operator, BasicNode, IfNode, ClassNode, VariableNode, ConstantNode, ArrayNode, AssignNode, ForeachNode, WhileNode
+from bigo_ast.bigo_ast import CompilationUnitNode, FuncDeclNode, FuncCallNode, Operator, BasicNode, IfNode, ClassNode, VariableNode, ConstantNode, ArrayNode, AssignNode, ForeachNode, WhileNode, SubscriptNode
 
 
 class PyTransformVisitor(ast.NodeVisitor):
@@ -66,7 +66,12 @@ class PyTransformVisitor(ast.NodeVisitor):
         else:
             func_call_node.name = ast_call.func.attr
 
-        func_call_node.parameter = astunparse.unparse(ast_call.args)
+        args_list = []
+        for arg in ast_call.args:
+            args_list.append(astunparse.unparse(arg).replace("\n", ""))
+        func_call_node.parameter = args_list
+
+        #func_call_node.parameter = astunparse.unparse(ast_call.args)
         return func_call_node
 
     def visit_Name(self, ast_name: ast.Name):
@@ -317,6 +322,13 @@ class PyTransformVisitor(ast.NodeVisitor):
             while_node.add_children(child_node)
             
         return while_node
+
+    def visit_Subscript(self, ast_subscript: ast.Subscript):
+        subscript_node = SubscriptNode()
+        subscript_node.value = self.visit(ast_subscript.value)
+        subscript_node.slice = self.visit(ast_subscript.slice)
+
+        return subscript_node
 
     def generic_visit(self, node):
         children = []
