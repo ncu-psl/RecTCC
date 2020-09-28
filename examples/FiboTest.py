@@ -34,7 +34,7 @@ def fibo_dp(n):
     return fibo_array[n]
 
 def test(a, b):
-    return test(a-1, b-1)
+    return test(a+1, b-1)
     
 def order(n):
     if n%3 == 0 :
