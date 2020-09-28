@@ -17,7 +17,7 @@ def main():
     RCV.check()
     for funcName, funcParameter, funcCall in zip(RCV.func_decl_name_list, RCV.func_decl_parameter_list, RCV.scope_list_final):
         arg_analysis(funcName, funcParameter, funcCall)
-        #print("funcName: %s%s, funcCall: %s" %(funcName, funcParameter, funcCall))
+        print("funcName: %s%s, funcCall: %s" %(funcName, funcParameter, funcCall))
         #print(recursion_time_complexity_calculator(funcParameter, funcCall))
 
 
@@ -25,8 +25,8 @@ def main():
     TCV = TimeSeparater(bigo_ast)
     TCV.calc()
     time_ast = TCV.root
-    for f in time_ast.children:
-        print(f.time_complexity)
+    for function_name, function_path in zip(TCV.function_list, time_ast.children):
+        print('Time complexity of %s: %s' %(function_name, function_path.time_complexity))
 
 if __name__ == '__main__' :
     main()

@@ -11,11 +11,12 @@ class TimeSeparater(BigOAstVisitor):
         '''
         self.root = root
         self.function_list = []
+        self.function_list_current_scope = []
         self.tc_list = []
         self.tc_list_final = []
         for func in root.children:
             if type(func) == bigo_ast.FuncDeclNode:
-                self.function_list.append(func)
+                self.function_list.append(func.name)
 
         pass
 
@@ -51,6 +52,7 @@ class TimeSeparater(BigOAstVisitor):
         #    if tc == 0:
         #        tc = 1
         #    func_decl_node.time_complexity = tc
+        self.function_list_current_scope.append(func_decl_node.name)
         tc = [sympy.Rational(1)]
         for child in func_decl_node.children:
             self.visit(child)
@@ -62,9 +64,15 @@ class TimeSeparater(BigOAstVisitor):
 
     def visit_FuncCallNode(self, func_call: bigo_ast.FuncCallNode):
         target = func_call.name
+        if target == self.function_list_current_scope[-1]:
+            return
+
+        if target not in self.function_list:
+            func_call.time_complexity = self.add_time(func_call.time_complexity, [sympy.Symbol(target, integer=True, positive=True)])
+
         for func in self.function_list:
-            if target == func.name:
-                func_call.time_complexity = [sympy.Symbol(func.name, integer=True, positive=True)]
+            if target == func:
+                func_call.time_complexity = [sympy.Symbol(func, integer=True, positive=True)]
                 break
 
         pass

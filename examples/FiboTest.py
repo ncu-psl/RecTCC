@@ -43,6 +43,9 @@ def order(n):
             print(1)
             print(1)
             print(1)
+            some_call(1, 2)
+            some_call(1, 2)
+            some_call(1, 2)
             print(1)
             print(1)
         else:
@@ -52,8 +55,10 @@ def order(n):
     elif n%3 == 1 + fobi(1) == 0:
         print(1)
         print(1)
+        some_call(10, 11)
         print(1)
     else:
         print(2)
         print(2)
         print(2)
+    some_call(10, 11)
