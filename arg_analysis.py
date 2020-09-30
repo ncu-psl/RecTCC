@@ -30,7 +30,7 @@ def arg_analysis(funcName, funcParameter, funcCall):
                 for call in road:
                     workload_in_one_road.append(workload_arg1(funcParameter, call, changed_index))
                 workload_list.append(workload_in_one_road)
-        print(workload_list)
+        print('funcName: %s%s, TimeComplexity: %s' %(funcName, funcParameter, workload_list))
 
     elif len(changed_index) == 2:
         #2 args
@@ -43,10 +43,10 @@ def arg_analysis(funcName, funcParameter, funcCall):
                 for call in road:
                     workload_in_one_road.append(workload_arg2(funcParameter, call, changed_index))
                 workload_list.append(workload_in_one_road)
-        print(workload_list)
+        print('funcName: %s%s, TimeComplex: %s' %(funcName, funcParameter, workload_list))
 
     else:
-        print('Complex')
+        print(changed_index, 'Complex')
 
     return changed_index
 
@@ -56,9 +56,9 @@ def workload_arg1(funcParameter, funcCall, changed_index):
     workload_new = funcCall[head]
     
     workload_diff = '(' + workload_origin + ') - (' + workload_new + ')'
-    workload_diff = str(sympy.simplify(workload_diff))
+    workload_diff = sympy.simplify(workload_diff)
 
-    if '/' in workload_diff:
+    if workload_diff.coeff(funcParameter[0]):
         return '/'
     else:
         return '+'
@@ -78,4 +78,3 @@ def workload_arg2(funcParameter, funcCall, changed_index):
         return '/'
     else:
         return '+'
-

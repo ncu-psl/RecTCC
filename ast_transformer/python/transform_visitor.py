@@ -1,6 +1,7 @@
 import ast
 import astunparse
 from ast_transformer.python.print_ast_visitor import print_ast_visitor
+from ast_transformer.python.argument_modifier import argumentModifier
 from bigo_ast.bigo_ast import CompilationUnitNode, FuncDeclNode, FuncCallNode, Operator, BasicNode, IfNode, ClassNode, VariableNode, ConstantNode, ArrayNode, AssignNode, ForeachNode, WhileNode, SubscriptNode
 
 
@@ -67,6 +68,9 @@ class PyTransformVisitor(ast.NodeVisitor):
             func_call_node.name = ast_call.func.attr
 
         args_list = []
+        arg_visitor = argumentModifier()
+        for arg in ast_call.args:
+            arg = arg_visitor.visit(arg)
         for arg in ast_call.args:
             args_list.append(astunparse.unparse(arg).replace("\n", ""))
         func_call_node.parameter = args_list
