@@ -72,11 +72,10 @@ def workload_arg2(funcParameter, funcCall, changed_index):
     workload_new = funcCall[tail] + ' - ' + funcCall[head]
 
     workload_diff = '(' + workload_origin + ') - (' + workload_new + ')'
-    workload_diff = str(sympy.simplify(workload_diff))
+    workload_diff = sympy.simplify(workload_diff)
 
-    if '/' in workload_diff:
+    if workload_diff.coeff(funcParameter[0]) or workload_diff.coeff(funcParameter[1]):
         return '/'
     else:
         return '+'
-
 

@@ -8,11 +8,13 @@ from bigo_calculator.time_complexity_scope_separater import TimeSeparater
 
 from arg_analysis import arg_analysis
 
+import astunparse
 
 def main():
-    #origin_ast = PyASTGenerator().generate('./examples/binarySearch_recursion.py')
-    origin_ast = PyASTGenerator().generate('./examples/FiboTest.py')
+    origin_ast = PyASTGenerator().generate('./examples/binarySearch_recursion.py')
+    #origin_ast = PyASTGenerator().generate('./examples/FiboTest.py')
     bigo_ast = PyTransformVisitor().transform(origin_ast)
+    print(astunparse.unparse(origin_ast))
     RCV = ScopeSeparater(bigo_ast)
     RCV.check()
     for funcName, funcParameter, funcCall in zip(RCV.func_decl_name_list, RCV.func_decl_parameter_list, RCV.scope_list_final):
