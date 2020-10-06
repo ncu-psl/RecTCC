@@ -62,3 +62,13 @@ def order(n):
         print(2)
         print(2)
     some_call(10, 11)
+
+def for_n(n):
+    for i in n:
+        print(i)
+        #for_n(n-1)
+
+def for_m_p(m, p):
+    for i in m:
+        for j in p:
+            for_n(10)

@@ -4,6 +4,9 @@ import sympy
 def arg_analysis(funcName, funcParameter, funcCall):
     print("funcName: %s%s, funcCall: %s" %(funcName, funcParameter, funcCall))
     changed_index = []
+    workload_list = []
+    add_sub = 0
+    mul_div = 0
 
     for road in funcCall:
         if not road:
@@ -21,7 +24,7 @@ def arg_analysis(funcName, funcParameter, funcCall):
 
     if len(changed_index) == 1:
         #only 1 arg
-        workload_list = []
+        #workload_list = []
         for road in funcCall:
             if not road:
                 workload_list.append([])
@@ -29,12 +32,14 @@ def arg_analysis(funcName, funcParameter, funcCall):
                 workload_in_one_road = []
                 for call in road:
                     workload_in_one_road.append(workload_arg1(funcParameter, call, changed_index))
-                workload_list.append(workload_in_one_road)
-        print('funcName: %s%s, TimeComplexity: %s' %(funcName, funcParameter, workload_list))
+                workload_list.append([workload_in_one_road.count('+'), workload_in_one_road.count('/')])
+                #workload_list.append(workload_in_one_road)
+        #print('funcName: %s%s, TimeComplexity: %s' %(funcName, funcParameter, workload_list))
+        #return workload_list
 
     elif len(changed_index) == 2:
         #2 args
-        workload_list = []
+        #workload_list = []
         for road in funcCall:
             if not road:
                 workload_list.append([])
@@ -42,13 +47,15 @@ def arg_analysis(funcName, funcParameter, funcCall):
                 workload_in_one_road = []
                 for call in road:
                     workload_in_one_road.append(workload_arg2(funcParameter, call, changed_index))
-                workload_list.append(workload_in_one_road)
-        print('funcName: %s%s, TimeComplex: %s' %(funcName, funcParameter, workload_list))
+                workload_list.append([workload_in_one_road.count('+'), workload_in_one_road.count('/')])
+                #workload_list.append(workload_in_one_road)
+        #print('funcName: %s%s, TimeComplex: %s' %(funcName, funcParameter, workload_list))
+        #return workload_list
 
     else:
-        print(changed_index, 'Complex')
+        print('Complex')
 
-    return changed_index
+    return workload_list
 
 def workload_arg1(funcParameter, funcCall, changed_index):
     head = changed_index[0]
