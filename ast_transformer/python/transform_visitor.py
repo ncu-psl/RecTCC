@@ -4,6 +4,8 @@ from ast_transformer.python.print_ast_visitor import print_ast_visitor
 from ast_transformer.python.argument_modifier import argumentModifier
 from bigo_ast.bigo_ast import CompilationUnitNode, FuncDeclNode, FuncCallNode, Operator, BasicNode, IfNode, ClassNode, VariableNode, ConstantNode, ArrayNode, AssignNode, ForeachNode, WhileNode, SubscriptNode
 
+from ast_transformer.python.recursion_call_collector import RecursionCallCollector
+
 
 class PyTransformVisitor(ast.NodeVisitor):
     def __init__(self):
@@ -57,6 +59,11 @@ class PyTransformVisitor(ast.NodeVisitor):
         for child in ast_func_def.body:
             self.parent = func_decl_node
             func_decl_node.add_children(self.visit(child))
+
+        recursion_call_collector = RecursionCallCollector()
+        recursion_call_collector.visit(ast_func_def)
+        func_decl_node.recursive_call_arg = recursion_call_collector.recursive_call
+        #print(func_decl_node.recursive_call_arg)
 
         return func_decl_node
 

@@ -83,6 +83,7 @@ class FuncDeclNode(BasicNode):
         self.recursive = False
         self.name = ''
         self.parameter = []
+        self.recursive_call_arg = []
 
         pass
 

@@ -45,12 +45,14 @@ class ScopeSeparater(BigOAstVisitor):
             current_scope_list = self.add_road(current_scope_list, [[func_call.parameter]])
             self.scope_list.append(current_scope_list)
 
-    #def visit_Operator(self, node: bigo_ast.Operator):
-    #    self.visit(node.left)
-    #    self.visit(node.right)
+    def visit_Operator(self, node: bigo_ast.Operator):
+        self.visit(node.left)
+        self.visit(node.right)
         
     def visit_IfNode(self, if_node: bigo_ast.IfNode):
         if self.scope_list:
+
+            self.visit(if_node.condition)
 
             if_true = [[]]
             self.scope_list.append(if_true)

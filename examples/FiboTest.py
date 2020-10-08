@@ -66,7 +66,8 @@ def order(n):
 def for_n(n):
     for i in n:
         print(i)
-        #for_n(n-1)
+        for_n(n-1)
+        for_n(n-2)
 
 def for_m_p(m, p):
     for i in m:
