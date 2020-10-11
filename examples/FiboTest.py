@@ -73,3 +73,7 @@ def for_m_p(m, p):
     for i in m:
         for j in p:
             for_n(10)
+            normal()
+
+def normal():
+    print('normal')

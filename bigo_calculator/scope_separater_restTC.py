@@ -3,7 +3,7 @@ from bigo_ast.bigo_ast_visitor import BigOAstVisitor
 from bigo_ast import bigo_ast
 import sympy
 
-class TimeSeparater(BigOAstVisitor):
+class TimeSeparater_rest(BigOAstVisitor):
 
     def __init__(self, root: bigo_ast.CompilationUnitNode):
         '''

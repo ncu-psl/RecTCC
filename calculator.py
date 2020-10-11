@@ -1,56 +1,52 @@
 import ast
 from ast_transformer.python.ast_generator import PyASTGenerator
 from ast_transformer.python.transform_visitor import PyTransformVisitor
-#from bigo_calculator.scope_separater import ScopeSeparater
 from bigo_calculator.scope_separater_mainTC import TimeSeparater_main
-#from masterT import recursion_time_complexity_calculator
-
-from bigo_calculator.time_complexity_scope_separater import TimeSeparater
+from bigo_calculator.scope_separater_restTC import TimeSeparater_rest
 from bigo_calculator.bigo_simplify import BigOSimplify
+from bigo_ast.bigo_ast import FuncDeclNode
 
-from arg_analysis import arg_analysis
-
-import astunparse
+from MT import master_theorem
 
 def main():
     #origin_ast = PyASTGenerator().generate('./examples/binarySearch_recursion.py')
     origin_ast = PyASTGenerator().generate('./examples/FiboTest.py')
+    #origin_ast = PyASTGenerator().generate('./examples/normal_recursive.py')
+
+    #Rest of time complexity formula
     bigo_ast = PyTransformVisitor().transform(origin_ast)
-
-    #Rest of time complexity formular
-    TCV = TimeSeparater(bigo_ast)
-    TCV.calc()
-    time_ast = TCV.root
+    restTCV = TimeSeparater_rest(bigo_ast)
+    restTCV.calc()
     rest_TC = []
-    for function_name, function_path in zip(TCV.function_list, time_ast.children):
-        print('Time complexity of %s: %s' %(function_name, function_path.time_complexity))
-        rest_TC.append(function_path.time_complexity)
+    for child in restTCV.root.children:
+        if type(child) != FuncDeclNode:
+            continue
+        print("funcName: %s%s, funcCall: %s" %(child.name, child.parameter, child.time_complexity))
+        child.determine_recursion()
+        rest_TC.append(child.time_complexity)
 
-    #Main of time complexity formular
-    CV = TimeSeparater_main(bigo_ast)
-    CV.calc()
+    #Main of time complexity formula
+    bigo_ast = PyTransformVisitor().transform(origin_ast)
+    mainTCV = TimeSeparater_main(bigo_ast)
+    mainTCV.calc()
     main_TC = []
-    for i in bigo_ast.children:
-        print("funcName: %s%s, funcCall: %s" %(i.name, i.parameter, i.time_complexity))
-        main_TC.append(i.time_complexity)
-
-    #RCV = ScopeSeparater(bigo_ast)
-    #RCV.check()
-    #RCV_T = []
-    #for funcName, funcParameter, funcCall in zip(RCV.func_decl_name_list, RCV.func_decl_parameter_list, RCV.scope_list_final):
-    #    #recur_tc_function = arg_analysis(funcName, funcParameter, funcCall)
-    #    #RCV_T.append(recur_tc_function)
-    #    #print(recur_tc_function)
-    #    #print("funcName: %s%s, funcCall: %s" %(funcName, funcParameter, funcCall))
-    #    #print(recursion_time_complexity_calculator(funcParameter, funcCall))
+    for child in mainTCV.root.children:
+        if type(child) != FuncDeclNode:
+            continue
+        print("funcName: %s%s, funcCall: %s" %(child.name, child.parameter, child.time_complexity))
+        child.determine_recursion()
+        main_TC.append(child.time_complexity)
 
 
-
-
+    print('Function name:', mainTCV.function_list)
     print('main_TC:', main_TC)
     print('rest_TC:', rest_TC)
     
+    #master_theorem(main_TC[-3], rest_TC[-3])
+    for m_list, r_list in zip(main_TC, rest_TC):
+        master_theorem(m_list, r_list)
+    
+
 
 if __name__ == '__main__' :
     main()
-

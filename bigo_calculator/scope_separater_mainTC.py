@@ -10,13 +10,13 @@ class TimeSeparater_main(BigOAstVisitor):
         List
         '''
         self.root = root
-        #self.function_list = []
+        self.function_list = []
         self.current_func = []
         self.tc_list = []
         self.tc_list_final = []
-        #for func in root.children:
-        #    if type(func) == bigo_ast.FuncDeclNode:
-        #        self.function_list.append(func.name)
+        for func in root.children:
+            if type(func) == bigo_ast.FuncDeclNode:
+                self.function_list.append(func.name)
 
         pass
 
