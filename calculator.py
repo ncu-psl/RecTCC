@@ -1,12 +1,11 @@
 import ast
 from ast_transformer.python.ast_generator import PyASTGenerator
 from ast_transformer.python.transform_visitor import PyTransformVisitor
+from bigo_ast.bigo_ast import FuncDeclNode
 from bigo_calculator.scope_separater_mainTC import TimeSeparater_main
 from bigo_calculator.scope_separater_restTC import TimeSeparater_rest
-from bigo_calculator.bigo_simplify import BigOSimplify
-from bigo_ast.bigo_ast import FuncDeclNode
+from bigo_calculator.master_theorem import master_theorem
 
-from MT import master_theorem
 
 def main():
     #origin_ast = PyASTGenerator().generate('./examples/binarySearch_recursion.py')
