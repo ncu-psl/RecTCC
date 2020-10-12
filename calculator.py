@@ -21,7 +21,7 @@ def main():
     for child in restTCV.root.children:
         if type(child) != FuncDeclNode:
             continue
-        print("funcName: %s%s, funcCall: %s" %(child.name, child.parameter, child.time_complexity))
+        #print("funcName: %s%s, funcCall: %s" %(child.name, child.parameter, child.time_complexity))
         child.determine_recursion()
         rest_TC.append(child.time_complexity)
 
@@ -33,18 +33,19 @@ def main():
     for child in mainTCV.root.children:
         if type(child) != FuncDeclNode:
             continue
-        print("funcName: %s%s, funcCall: %s" %(child.name, child.parameter, child.time_complexity))
+        #print("funcName: %s%s, funcCall: %s" %(child.name, child.parameter, child.time_complexity))
         child.determine_recursion()
         main_TC.append(child.time_complexity)
 
 
-    print('Function name:', mainTCV.function_list)
-    print('main_TC:', main_TC)
-    print('rest_TC:', rest_TC)
+    #print('Function name:', mainTCV.function_list)
+    #print('main_TC:', main_TC)
+    #print('rest_TC:', rest_TC)
     
     #master_theorem(main_TC[-3], rest_TC[-3])
-    for m_list, r_list in zip(main_TC, rest_TC):
-        master_theorem(m_list, r_list)
+    for f_list, m_list, r_list in zip(mainTCV.function_list, main_TC, rest_TC):
+        #master_theorem(m_list, r_list)
+        print('TimeComplexity of %s: O(%s)' %(f_list, master_theorem(m_list, r_list)))
     
 
 
