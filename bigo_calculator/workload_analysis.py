@@ -54,7 +54,22 @@ def workload_arg1(func_decl_node, func_call, affective_arg_index):
     workload_origin = func_decl_node.parameter[head]
     workload_new = func_call.parameter[head]
 
+    #if isinstance(ast.parse(workload_new, mode='eval').body, ast.Subscript):
+    #    subscript = ast.parse(workload_new, mode='eval').body
+    #    if subscript.slice.lower:
+    #        lower = astunparse.unparse(subscript.slice.lower).replace("\n", "")
+    #    else:
+    #        lower = 0
+    #    if subscript.slice.upper:
+    #        upper = astunparse.unparse(subscript.slice.upper).replace("\n", "")
+    #    else:
+    #        upper = 1
+    #    workload_diff = '(' + str(upper) + ') - (' + str(lower) + ')'
+    #    print(workload_diff)
+    #    workload_diff = sympy.sympify(workload_diff)
+
     workload_diff = '(' + workload_origin + ') - (' + workload_new + ')'
+    #print(workload_diff)
     workload_diff = sympy.sympify(workload_diff)
 
     return workload_diff

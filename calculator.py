@@ -10,7 +10,7 @@ from bigo_calculator.master_theorem import master_theorem
 def main():
     #origin_ast = PyASTGenerator().generate('./examples/binarySearch_recursion.py')
     origin_ast = PyASTGenerator().generate('./examples/FiboTest.py')
-    #origin_ast = PyASTGenerator().generate('./examples/normal_recursive.py')
+    #origin_ast = PyASTGenerator().generate('./examples/examples.py')
 
     #Rest of time complexity formula
     bigo_ast = PyTransformVisitor().transform(origin_ast)
@@ -42,9 +42,14 @@ def main():
     #print('rest_TC:', rest_TC)
     
     #master_theorem(main_TC[-3], rest_TC[-3])
+    #for f_list, m_list, r_list in zip(mainTCV.function_list, main_TC, rest_TC):
     for f_list, m_list, r_list in zip(mainTCV.function_list, main_TC, rest_TC):
         #master_theorem(m_list, r_list)
-        print('TimeComplexity of %s: O(%s)' %(f_list, master_theorem(m_list, r_list)))
+        #print('main_tc: %s, rest_tc: %s' %(m_tc, r_tc))
+        print('Function: ', f_list)
+        for i, (m, r) in enumerate(zip(m_list, r_list)):
+            print('Road%s: TC = %s + %s' %(i, m, r))
+        print('TimeComplexity of %s: O(%s)\n' %(f_list, master_theorem(m_list, r_list)))
     
 
 

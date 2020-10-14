@@ -1,28 +1,35 @@
-#def merge(a, b, m, e):
-#    l = a[b : m + 1]
-#    r = a[m + 1 : e + 1]
-#    k = b
-#    i = 0
-#    j = 0
-#    while i < len(l) and j < len(r):
-#        # change sign for Descending order
-#        if l[i] < r[j]:
-#            a[k] = l[i]
-#            i += 1
-#        else:
-#            a[k] = r[j]
-#            j += 1
-#        k += 1
-#    while i < len(l):
-#        a[k] = l[i]
-#        i += 1
-#        k += 1
-#    while j < len(r):
-#        a[k] = r[j]
-#        j += 1
-#        k += 1
-#    return a
+def mergeSort(array):
 
+    if len(array) < 2:
+        return array
+
+    #mid = len(array)//2
+    #L = array[:mid]
+    #R = array[mid:]
+
+    mergeSort(array[:len(array)//2])
+    mergeSort(array[len(array)//2:])
+
+    i, j, k = 0, 0, 0
+
+    while i < len(L) and j < len(R):
+        if L[i] < R[j]:
+            array[k] = L[i]
+            i += 1
+        else:
+            array[k] = R[j]
+            j += 1
+        k += 1
+
+    while i < len(L):
+        array[k] = L[i]
+        i += 1
+        k += 1
+
+    while j < len(R):
+        array[k] = R[j]
+        j += 1
+        k += 1
 
 def mergesort(a, b, e):
 
