@@ -3,14 +3,16 @@ def mergeSort(array):
     if len(array) < 2:
         return array
 
-    #mid = len(array)//2
-    #L = array[:mid]
-    #R = array[mid:]
+    mid = len(array)//2
+    L = array[:mid]
+    R = array[mid:]
 
-    mergeSort(array[:len(array)//2])
-    mergeSort(array[len(array)//2:])
+    mergeSort(L)
+    mergeSort(R)
 
-    i, j, k = 0, 0, 0
+    i = 0
+    j = 0
+    k = 0
 
     while i < len(L) and j < len(R):
         if L[i] < R[j]:
@@ -21,16 +23,16 @@ def mergeSort(array):
             j += 1
         k += 1
 
-    while i < len(L):
-        array[k] = L[i]
-        i += 1
-        k += 1
+    #while i < len(L):
+    #    array[k] = L[i]
+    #    i += 1
+    #    k += 1
 
     while j < len(R):
         array[k] = R[j]
         j += 1
         k += 1
-
+'''
 def mergesort(a, b, e):
 
     if b < e:
@@ -75,3 +77,4 @@ def fibo(n):
 #
 #    #doctest.testmod()
 #
+'''
