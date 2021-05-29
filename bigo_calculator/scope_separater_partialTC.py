@@ -117,7 +117,7 @@ class TimeSeparater_partial(BigOAstVisitor):
             self.visit(child)
             tc = self.add_time(tc, child.time_complexity)
 
-        tc = self.mul_time(tc, [sympy.Symbol('n')])
+        tc = self.mul_time(tc, [sympy.Symbol('n', positive=True, even=True)])
         for child in foreach_node.target:
             tc = self.add_time(tc, child.time_complexity)
         for child in foreach_node.iter:
@@ -133,7 +133,7 @@ class TimeSeparater_partial(BigOAstVisitor):
             self.visit(child)
             tc = self.add_time(tc, child.time_complexity)
 
-        tc = self.mul_time(tc, [sympy.Symbol('n')])
+        tc = self.mul_time(tc, [sympy.Symbol('n', positive=True, even=True)])
 
         while_node.time_complexity = tc
 
