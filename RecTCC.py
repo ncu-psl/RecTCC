@@ -5,13 +5,24 @@ from bigo_calculator.scope_separater_partialTC import TimeSeparater_partial
 #from bigo_calculator.master_theorem import master_theorem
 
 from master_theorem.master_theorem import master_theorem
+import argparse
+import os
 
 
 def main():
+    arg_parse = argparse.ArgumentParser()
+    arg_parse.add_argument('filename', type=str)
+    args = arg_parse.parse_args()
+    source_file_name = args.filename
+    if not os.path.isfile(source_file_name):
+        raise FileNotFoundError
+
+    origin_ast = PyASTGenerator().generate(source_file_name)
+
     #origin_ast = PyASTGenerator().generate('./examples/binarySearch_recursion.py')
     #origin_ast = PyASTGenerator().generate('./examples/fibo.py')
     #origin_ast = PyASTGenerator().generate('./examples/recursive_activity_selector.py')
-    origin_ast = PyASTGenerator().generate('./examples/bubblesort.py')
+    #origin_ast = PyASTGenerator().generate('./examples/bubblesort.py')
     #origin_ast = PyASTGenerator().generate('./examples/mergesort.py')
 
     bigo_ast = PyTransformVisitor().transform(origin_ast)
